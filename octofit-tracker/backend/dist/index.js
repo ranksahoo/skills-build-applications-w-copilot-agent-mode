@@ -6,16 +6,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const cors_1 = __importDefault(require("cors"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const express_1 = __importDefault(require("express"));
-const mongoose_1 = __importDefault(require("mongoose"));
 const activities_1 = __importDefault(require("./api/activities"));
 const leaderboard_1 = __importDefault(require("./api/leaderboard"));
 const teams_1 = __importDefault(require("./api/teams"));
 const users_1 = __importDefault(require("./api/users"));
 const workouts_1 = __importDefault(require("./api/workouts"));
+const database_1 = require("./database");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const port = Number(process.env.PORT ?? 8000);
-const mongoUri = process.env.MONGODB_URI ?? 'mongodb://127.0.0.1:27017/octofit_db';
 const codespaceName = process.env.CODESPACE_NAME;
 const baseUrl = codespaceName
     ? `https://${codespaceName}-8000.app.github.dev`
@@ -32,8 +31,8 @@ app.use('/api/leaderboard', leaderboard_1.default);
 app.use('/api/workouts', workouts_1.default);
 const startServer = async () => {
     try {
-        await mongoose_1.default.connect(mongoUri);
-        console.log(`MongoDB connected: ${mongoUri}`);
+        await (0, database_1.connectToDatabase)();
+        console.log(`MongoDB connected: ${database_1.mongoUri}`);
         console.log(`API base URL: ${baseUrl}`);
         app.listen(port, () => {
             console.log(`API server listening on port ${port}`);
